@@ -1,0 +1,152 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb0
+  labels:
+    app: mongodb0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb0
+  template:
+    metadata:
+      labels:
+        app: mongodb0
+    spec:
+      hostname: mongodb0
+      hostAliases:
+        - ip: 127.0.0.1
+          hostnames:
+            - mongodb0
+      volumes:
+        - name: mongodb0-data
+          persistentVolumeClaim:
+            claimName: mongodb0-data
+      containers:
+      - name: mongodb0
+        image: localhost/mongodb-primary
+        securityContext:
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - chown
+              - setuid
+              - setgid
+          allowPrivilegeEscalation: false
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongodb0-data
+          mountPath: /data
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: root
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: password
+        args: 
+          - --replSet=rs0
+          - --keyFile=/etc/mongo/keyfile.txt
+          - --bind_ip=0.0.0.0
+          - --port=27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb1
+  labels:
+    app: mongodb1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb1
+  template:
+    metadata:
+      labels:
+        app: mongodb1
+    spec:
+      hostname: mongodb1
+      hostAliases:
+        - ip: 127.0.0.1
+          hostnames:
+            - mongodb1
+      volumes:
+        - name: mongodb1-data
+          persistentVolumeClaim:
+            claimName: mongodb1-data
+      containers:
+      - name: mongodb0
+        image: localhost/mongodb-secondary
+        securityContext:
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - chown
+              - setuid
+              - setgid
+          allowPrivilegeEscalation: false
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongodb1-data
+          mountPath: /data
+        args: 
+          - --replSet=rs0
+          - --keyFile=/etc/mongo/keyfile.txt
+          - --bind_ip=0.0.0.0
+          - --port=27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb2
+  labels:
+    app: mongodb2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb2
+  template:
+    metadata:
+      labels:
+        app: mongodb2
+    spec:
+      hostname: mongodb2
+      hostAliases:
+        - ip: 127.0.0.1
+          hostnames:
+            - mongodb2
+      volumes:
+        - name: mongodb2-data
+          persistentVolumeClaim:
+            claimName: mongodb2-data
+      containers:
+      - name: mongodb2
+        image: localhost/mongodb-secondary
+        securityContext:
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - chown
+              - setuid
+              - setgid
+          allowPrivilegeEscalation: false
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongodb2-data
+          mountPath: /data
+        args: 
+          - --replSet=rs0
+          - --keyFile=/etc/mongo/keyfile.txt
+          - --bind_ip=0.0.0.0
+          - --port=27017

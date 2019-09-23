@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb0-data
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem 
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain # manual deletion
+  hostPath:
+    path: /tmp/mongodb0-data # WARNING
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb1-data
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem 
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain # manual deletion
+  hostPath:
+    path: /tmp/mongodb1-data # WARNING
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb2-data
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem 
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain # manual deletion
+  hostPath:
+    path: /tmp/mongodb2-data # WARNING
